@@ -1,0 +1,72 @@
+# ==========================
+# OS Files
+# ==========================
+.DS_Store
+Thumbs.db
+
+# ==========================
+# IDE Files
+# ==========================
+.vscode/
+.idea/
+.zed/
+.cursor/
+.codex/
+.nova/
+
+# ==========================
+# Laravel (Backend)
+# ==========================
+backend/.env
+backend/.env.backup
+backend/.env.production
+
+backend/vendor/
+
+backend/storage/*.key
+backend/storage/pail/
+
+backend/public/build/
+backend/public/hot
+backend/public/storage
+
+backend/node_modules/
+
+backend/.phpactor.json
+backend/.phpunit.result.cache
+backend/.phpunit.cache
+
+backend/auth.json
+
+backend/_ide_helper.php
+
+backend/Homestead.yaml
+backend/Homestead.json
+
+backend/*.log
+
+# ==========================
+# Flutter (Frontend)
+# ==========================
+frontend/.dart_tool/
+frontend/build/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.packages
+frontend/.metadata
+
+# Flutter Generated
+frontend/.pub-cache/
+
+# Android
+frontend/android/.gradle/
+frontend/android/local.properties
+
+# iOS
+frontend/ios/Pods/
+frontend/ios/.symlinks/
+
+# ==========================
+# Logs
+# ==========================
+*.log
