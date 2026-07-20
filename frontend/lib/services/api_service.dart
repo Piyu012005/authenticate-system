@@ -3,8 +3,9 @@ import 'package:http/http.dart' as http;
 import '../utils/storage.dart';
 
 class ApiService {
-  // Base URL of our Laravel backend
-  static const String baseUrl = 'http://127.0.0.1:8000/api';
+  // Base URL of your deployed Laravel backend
+  static const String baseUrl =
+      'https://authenticate-system-backend.onrender.com/api';
 
   /// Returns standard JSON headers for all requests
   static Map<String, String> _headers({bool requiresAuth = false}) {
@@ -12,17 +13,18 @@ class ApiService {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
+
     if (requiresAuth) {
       final token = Storage.getToken();
-      if (token != null) {
+      if (token != null && token.isNotEmpty) {
         headers['Authorization'] = 'Bearer $token';
       }
     }
+
     return headers;
   }
 
   /// Register a new user
-  /// POST /api/register
   static Future<Map<String, dynamic>> register({
     required String name,
     required String email,
@@ -39,11 +41,11 @@ class ApiService {
         'password_confirmation': passwordConfirmation,
       }),
     );
+
     return _handleResponse(response);
   }
 
-  /// Login with email and password
-  /// POST /api/login
+  /// Login
   static Future<Map<String, dynamic>> login({
     required String email,
     required String password,
@@ -56,30 +58,31 @@ class ApiService {
         'password': password,
       }),
     );
+
     return _handleResponse(response);
   }
 
-  /// Get the authenticated user's profile
-  /// GET /api/profile  (requires Bearer token)
+  /// Get logged in user's profile
   static Future<Map<String, dynamic>> profile() async {
     final response = await http.get(
       Uri.parse('$baseUrl/profile'),
       headers: _headers(requiresAuth: true),
     );
+
     return _handleResponse(response);
   }
 
-  /// Logout and revoke current token
-  /// POST /api/logout  (requires Bearer token)
+  /// Logout
   static Future<Map<String, dynamic>> logout() async {
     final response = await http.post(
       Uri.parse('$baseUrl/logout'),
       headers: _headers(requiresAuth: true),
     );
+
     return _handleResponse(response);
   }
 
-  /// Parses the HTTP response and throws on error status codes
+  /// Handle API responses
   static Map<String, dynamic> _handleResponse(http.Response response) {
     final body = jsonDecode(response.body) as Map<String, dynamic>;
 
@@ -87,10 +90,9 @@ class ApiService {
       return body;
     }
 
-    // Extract error message from validation errors or top-level message
-    String errorMessage = body['message'] ?? 'An unexpected error occurred';
+    String errorMessage =
+        body['message'] ?? 'An unexpected error occurred';
 
-    // Handle Laravel validation errors (422)
     if (body.containsKey('errors')) {
       final errors = body['errors'] as Map<String, dynamic>;
       final firstError = errors.values.first;
