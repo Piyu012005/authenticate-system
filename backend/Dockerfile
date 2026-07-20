@@ -19,27 +19,32 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Set working directory
 WORKDIR /var/www
 
-# Copy project files
+# Copy application files
 COPY . .
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Install Node dependencies and build assets
+# Install Node dependencies
 RUN npm install
+
+# Build Vite assets
 RUN npm run build
 
-# Create required Laravel directories
+# Create Laravel storage directories
 RUN mkdir -p storage/framework/cache \
     storage/framework/sessions \
     storage/framework/views \
     storage/logs
 
-# Give permissions
+# Set permissions
 RUN chmod -R 775 storage bootstrap/cache
 
+# Expose Render port
 EXPOSE 10000
 
-CMD sh -c "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"
+# Run migrations first, then start Laravel
+CMD sh -c "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"
