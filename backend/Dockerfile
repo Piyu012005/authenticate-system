@@ -21,7 +21,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-# Copy application
+# Copy project files
 COPY . .
 
 # Install PHP dependencies
@@ -31,11 +31,15 @@ RUN composer install --no-dev --optimize-autoloader
 RUN npm install
 RUN npm run build
 
-# Laravel optimization
-RUN php artisan config:clear
-RUN php artisan route:clear
-RUN php artisan view:clear
+# Create required Laravel directories
+RUN mkdir -p storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs
+
+# Give permissions
+RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 10000
 
-CMD php artisan serve --host=0.0.0.0 --port=10000
+CMD sh -c "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"
